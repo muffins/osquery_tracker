@@ -3,8 +3,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-const char* ssid     = "fbguest";
-const char* password = "m0vefast";
+const char* ssid     = "Pwn135";
+const char* password = "my.little.pwnies";
 const char* pr_url = "/search/issues?q=type:pr+state:open+repo:facebook/osquery";
 const char* issue_url = "/search/issues?q=type:issue+state:open+repo:facebook/osquery"; 
 const char* host = "api.github.com";
@@ -35,15 +35,6 @@ void setup() {
   Serial.println("osquery dev board v0.1");
   Serial.println("Connecting to wifi");
   Serial.println(ssid);
-  
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  lastPull = 9999;
-  lastIssue = 9999;
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
   display.clearDisplay();
@@ -53,7 +44,19 @@ void setup() {
   display.drawBitmap(48, 0, osquerylogo, 32, 32, WHITE);
   display.display();
   display.setTextSize(2);
- 
+  delay(2000);
+  display.clearDisplay();
+  
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    // Serial.print(".");
+    display.print(". ");
+  }
+
+  lastPull = 9999;
+  lastIssue = 9999;
+
   Serial.println();
   Serial.println("WiFi connected");  
   Serial.print("IP address: ");
@@ -86,7 +89,8 @@ String getCount(const char* url) {
     }
   }
   String json = client.readStringUntil('}');
-  size_t comma, colon;
+  size_t comma = 0;
+  size_t colon = 0;
   for (size_t i = 0; i < json.length(); ++i) {
     if (json[i] == ':') {
       colon = i;
